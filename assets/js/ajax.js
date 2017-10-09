@@ -13,7 +13,9 @@ jQuery(document).ready(function ($) {
             data: {
                 action: "sv_post_id",
                 post_id: post_id,
-                nonce: nonce
+                nonce: nonce,
+                //control
+                //ToDO add control type to the object
             },
             success: function (response) {
                 // console.log('good');
