@@ -10,7 +10,7 @@
  * Author URI: http://bbioon.com
  * License: GPL2+
  * Text Domain: sv
- * Domain Path: /framework/languages
+ * Domain Path: /languages
  */
 
 define( 'SV_CSS_URI', plugins_url( 'assets/css/', __FILE__ ) );

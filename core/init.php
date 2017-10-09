@@ -53,15 +53,27 @@ function sv_view_saved_posts() {
 		$current_user = get_current_user_id();
 		$saved_posts  = get_user_meta( $current_user, 'sv_post_ids', true );
 		if ( $saved_posts && is_array( $saved_posts ) ) {
-			$args  = array(
-				'post__in' => $saved_posts
-			);
-			$query = new WP_Query( $args );
-			if ( $query->have_posts() ) {
-				while ( $query->have_posts() ) {
-					$query->the_post();
+			?>
+            <div class="sv-posts-container">
+				<?php
+				$args  = array(
+					'post__in'               => array_reverse( $saved_posts ),
+					'no_found_rows'          => true,  // counts posts, remove if pagination required
+					'update_post_term_cache' => false, // grabs terms, remove if terms required (category, tag...)
+					'update_post_meta_cache' => false  // grabs post meta, remove if post meta required
+				);
+				$query = new WP_Query( $args );
+				if ( $query->have_posts() ) {
+					while ( $query->have_posts() ) {
+						//Render html posts file here
+						$query->the_post();
+						require SV_CORE_DIR . 'post-template.php';
+					}
 				}
-			}
+				wp_reset_postdata();
+				?>
+            </div>
+			<?php
 		} else {
 			//no posts message
 		}
@@ -69,4 +81,14 @@ function sv_view_saved_posts() {
 	} else {
 		//get posts ids from saved cookie
 	}
+}
+
+add_action( 'sv_render_save_posts_button', 'sv_render_save_posts_button' );
+function sv_render_save_posts_button() {
+	?>
+    <button type="button" class="sv-save-post" data-control="add"
+            data-nonce="<?php echo wp_create_nonce( 'sv_save_post' ); ?>" data-post-id="<?php the_ID(); ?>">
+        save this post
+    </button>
+	<?php
 }
