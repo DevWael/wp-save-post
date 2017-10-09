@@ -18,7 +18,7 @@ function sv_handle_posts_in_cookie() {
 add_action( 'wp_ajax_sv_post_id', 'sv_handle_posts_in_usermeta' );
 function sv_handle_posts_in_usermeta() {
 	//Security check
-	$saved_posts = array( );
+	$saved_posts = array();
 	if ( ! isset( $_POST['nonce'] ) ) {
 		wp_send_json_error( 'Nonce is missing' );
 	}
@@ -26,7 +26,7 @@ function sv_handle_posts_in_usermeta() {
 		wp_send_json_error( 'Bad nonce' );
 	}
 	$current_user = get_current_user_id();
-	$saved_posts  = get_user_meta( $current_user, 'sv_post_ids',true );
+	$saved_posts  = get_user_meta( $current_user, 'sv_post_ids', true );
 	if ( isset( $_POST['post_id'] ) && is_numeric( $_POST['post_id'] ) && sv_check_post_exist_by_id( $_POST['post_id'] ) ) {
 		if ( ! in_array( $_POST['post_id'], $saved_posts ) ) {
 			$saved_posts[] = $_POST['post_id'];
@@ -44,4 +44,29 @@ function sv_move_posts_from_cookie_to_usermeta() {
 
 function sv_check_post_exist_by_id( $id ) {
 	return is_string( get_post_status( $id ) );
+}
+
+add_action( 'sv_render_posts_list', 'sv_view_saved_posts' );
+function sv_view_saved_posts() {
+	if ( is_user_logged_in() ) {
+		//get posts ids from user meta
+		$current_user = get_current_user_id();
+		$saved_posts  = get_user_meta( $current_user, 'sv_post_ids', true );
+		if ( $saved_posts && is_array( $saved_posts ) ) {
+			$args  = array(
+				'post__in' => $saved_posts
+			);
+			$query = new WP_Query( $args );
+			if ( $query->have_posts() ) {
+				while ( $query->have_posts() ) {
+					$query->the_post();
+				}
+			}
+		} else {
+			//no posts message
+		}
+
+	} else {
+		//get posts ids from saved cookie
+	}
 }
