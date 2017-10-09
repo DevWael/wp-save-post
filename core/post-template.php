@@ -1,6 +1,6 @@
 <div class="sv-post-container">
 	<div class="sv-post-control">
-		<button type="button" data-control="delete" data-post-id="<?php the_ID() ?>" data-nonce="<?php echo wp_create_nonce( 'sv_save_post' ); ?>">
+		<button type="button" title="Delete" data-control="delete" data-post-id="<?php the_ID() ?>" data-nonce="<?php echo wp_create_nonce( 'sv_save_post' ); ?>">
 			<i class="fa fa-times-circle" aria-hidden="true"></i>
 		</button>
 	</div>
@@ -14,4 +14,5 @@
 			<?php the_title(); ?>
 		</a>
 	</div>
+    <div class="clearfix"></div>
 </div>

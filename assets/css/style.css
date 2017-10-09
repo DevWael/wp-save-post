@@ -1,0 +1,79 @@
+.clearfix {
+    clear: both;
+    display: block;
+}
+
+.sv-posts-container {
+    max-width: 370px;
+    background: #fff;
+    border-radius: 3px;
+    -webkit-box-shadow: 0 0 3px #CACACA;
+    -moz-box-shadow: 0 0 3px #cacaca;
+    box-shadow: 0 0 3px #CACACA;
+    position: fixed;
+    left: 0;
+    bottom: 100px;
+}
+
+.sv-posts-container:after {
+    clear: both;
+    display: block;
+    content: '';
+}
+.sv-posts-container .sv-post-container{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #CACACA;
+}
+.sv-posts-container .sv-post-control {
+    float: left;
+    width: 15%;
+    text-align: center;
+}
+
+.sv-posts-container .sv-post-control button {
+    background: none;
+    border: none;
+    outline: none;
+    font-size: 20px;
+    color: #e74c3c;
+    line-height: 58px;
+    padding: 0 10px;
+    -webkit-transition: 300ms;
+    -moz-transition: 300ms;
+    -ms-transition: 300ms;
+    -o-transition: 300ms;
+    transition: 300ms;
+}
+
+.sv-posts-container .sv-post-control button:hover{
+    color: #333;
+}
+
+.sv-posts-container .sv-post-image {
+    width: 15%;
+    height: 60px;
+    overflow: hidden;
+    float: left;
+    border-radius: 3px;
+}
+
+.sv-posts-container .sv-post-image img {
+    width: auto;
+    display: block;
+    height: 100%;
+
+}
+
+.sv-posts-container .sv-post-content {
+    float: left;
+    width: 70%;
+    padding: 10px;
+}
+
+.sv-posts-container .sv-post-content a {
+    word-wrap: break-word;
+    text-transform: capitalize;
+    font-size: 13px;
+    font-weight: bold;
+}
