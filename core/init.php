@@ -18,7 +18,6 @@ function sv_handle_posts_in_cookie() {
 add_action( 'wp_ajax_sv_post_id', 'sv_handle_posts_in_usermeta' );
 function sv_handle_posts_in_usermeta() {
 	//Security check
-	$saved_posts = array();
 	if ( ! isset( $_POST['nonce'] ) ) {
 		wp_send_json_error( 'Nonce is missing' );
 	}
@@ -102,3 +101,6 @@ function sv_view_saved_posts() {
 	}
 }
 
+function sv_display_saved_posts_in_user_profile(){
+
+}
