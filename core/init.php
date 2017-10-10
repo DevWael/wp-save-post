@@ -18,7 +18,7 @@ function sv_handle_posts_in_cookie() {
 add_action( 'wp_ajax_sv_post_id', 'sv_handle_posts_in_usermeta' );
 function sv_handle_posts_in_usermeta() {
 	//Security check
-	if ( ! isset( $_POST['nonce'] ) ) {
+    if ( ! isset( $_POST['nonce'] ) ) {
 		wp_send_json_error( 'Nonce is missing' );
 	}
 	if ( ! wp_verify_nonce( $_POST['nonce'], 'sv_save_post' ) ) {
@@ -41,7 +41,7 @@ function sv_handle_posts_in_usermeta() {
 			unset( $saved_posts[ $key ] );
 		}
 		update_user_meta( $current_user, 'sv_post_ids', $saved_posts );
-		wp_send_json_success( $saved_posts ); //Send delete command to the frontend
+		wp_send_json_success( array( 'post_id' => $_POST['post_id'] ) ); //Send delete command to the frontend
 	}
 }
 
@@ -101,6 +101,6 @@ function sv_view_saved_posts() {
 	}
 }
 
-function sv_display_saved_posts_in_user_profile(){
+function sv_display_saved_posts_in_user_profile() {
 
 }

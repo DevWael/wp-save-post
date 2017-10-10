@@ -16,7 +16,7 @@ function sv_main_setting_page() {
 }
 
 function sv_other_setting_page() {
-
+	//render more options for the plugin in submenu page
 }
 
 add_action( 'admin_init', 'sv_admin_settings' );
@@ -24,11 +24,9 @@ function sv_admin_settings() {
 	register_setting( 'main_sv_options', 'sv_main_settings' );
 }
 
-if ( is_admin() ) {
-	add_action( 'admin_init', 'register_mysettings' );
-}
 
-function register_mysettings() { // whitelist options
+add_action( 'admin_init', 'sv_register_mysettings' );
+function sv_register_mysettings() {
 	register_setting( 'main_sv_options', 'new_option_name' );
 	register_setting( 'main_sv_options', 'max_posts_no' );
 }

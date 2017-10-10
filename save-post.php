@@ -1,6 +1,4 @@
-<?php if ( ! defined( 'ABSPATH' ) ) {
-	die( 'Forbidden' );
-}
+<?php
 /**
  * Plugin Name: WP Save Post
  * Plugin URI: http://bbioon.com/
@@ -13,6 +11,11 @@
  * Domain Path: /languages
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Forbidden' );
+}
+
+// Main Plugin Constants
 define( 'SV_CSS_URI', plugins_url( 'assets/css/', __FILE__ ) );
 define( 'SV_JS_URI', plugins_url( 'assets/js/', __FILE__ ) );
 define( 'SV_CORE_DIR', plugin_dir_path( __FILE__ ) . 'core' . DIRECTORY_SEPARATOR );
@@ -23,8 +26,6 @@ define( 'SV_ADMIN_DIR', plugin_dir_path( __FILE__ ) . 'admin' . DIRECTORY_SEPARA
  */
 if ( is_admin() ) {
 	require SV_ADMIN_DIR . 'init.php';
-} else {
-	require SV_CORE_DIR . 'assets.php';
-	require SV_CORE_DIR . 'init.php';
 }
-
+require SV_CORE_DIR . 'assets.php';
+require SV_CORE_DIR . 'init.php';

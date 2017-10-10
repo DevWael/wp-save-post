@@ -4,32 +4,23 @@ jQuery(document).ready(function ($) {
     //Add post to the list
     $(".sv-save-post").click(function (e) {
         e.preventDefault();
-        post_id = $(this).data("post-id");
-        nonce = $(this).data("nonce");
-        control = $(this).data("control");
+       var spost_id = $(this).data("post-id");
+        var snonce = $(this).data("nonce");
+        var scontrol = $(this).data("control");
         $.ajax({
             type: "post",
             dataType: "json",
             url: sv_ajax_object.sv_ajax_url,
             data: {
                 action: "sv_post_id",
-                post_id: post_id,
-                nonce: nonce,
-                control: control
-                //ToDO add control type to the object
+                post_id: spost_id,
+                nonce: snonce,
+                control: scontrol
             },
             success: function (response) {
-                // console.log('good');
                 console.log(response);
-                if (response.success == true) {
-                    $("#vote_counter").html(response.vote_count);
-                }
-                else {
-                    // console.log(response);
-                }
             }
         });
-
     });
 
     //Delete post from the list
@@ -49,14 +40,8 @@ jQuery(document).ready(function ($) {
                 control: control
             },
             success: function (response) {
-                // console.log('good');
                 console.log(response);
-                if (response.success == true) {
-                    $("#vote_counter").html(response.vote_count);
-                }
-                else {
-                    // console.log(response);
-                }
+                $('.sv-post-container.sv-post-' + response.data.post_id).hide();
             }
         });
 
