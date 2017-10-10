@@ -41,7 +41,7 @@ jQuery(document).ready(function ($) {
             },
             success: function (response) {
                 console.log(response);
-                $('.sv-post-container.sv-post-' + response.data.post_id).fadeOut(300);
+                $('.sv-post-container.sv-post-' + response.data.post_id).fadeOut(300, function() { $(this).remove(); });
             }
         });
     });
