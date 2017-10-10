@@ -15,7 +15,7 @@ jQuery(document).ready(function ($) {
                 action: "sv_post_id",
                 post_id: post_id,
                 nonce: nonce,
-                control:  control
+                control: control
             },
             success: function (response) {
                 console.log(response);
@@ -44,7 +44,5 @@ jQuery(document).ready(function ($) {
                 $('.sv-post-container.sv-post-' + response.data.post_id).hide();
             }
         });
-
     });
-
 });
