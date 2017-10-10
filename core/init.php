@@ -27,14 +27,23 @@ function sv_handle_posts_in_usermeta() {
 	}
 	$current_user = get_current_user_id();
 	$saved_posts  = get_user_meta( $current_user, 'sv_post_ids', true );
-	if ( isset( $_POST['post_id'] ) && is_numeric( $_POST['post_id'] ) && sv_check_post_exist_by_id( $_POST['post_id'] ) ) {
-		if ( ! in_array( $_POST['post_id'], $saved_posts ) ) {
-			$saved_posts[] = $_POST['post_id'];
-			update_user_meta( $current_user, 'sv_post_ids', $saved_posts );
+	if ( isset( $_POST['control'] ) && $_POST['control'] === 'add' ) {
+		if ( isset( $_POST['post_id'] ) && is_numeric( $_POST['post_id'] ) && sv_check_post_exist_by_id( $_POST['post_id'] ) ) {
+			if ( ! in_array( $_POST['post_id'], $saved_posts ) ) {
+				$saved_posts[] = $_POST['post_id'];
+				update_user_meta( $current_user, 'sv_post_ids', $saved_posts );
+			}
 		}
+		wp_send_json_success( $saved_posts ); //Send add post command to the frontend
+	} elseif ( isset( $_POST['control'] ) && $_POST['control'] === 'delete' ) {
+		//Delete Mechanizm
+		$key = array_search( $_POST['post_id'], $saved_posts );
+		if ( $key !== false ) {
+			unset( $saved_posts[ $key ] );
+		}
+		update_user_meta( $current_user, 'sv_post_ids', $saved_posts );
+		wp_send_json_success( $saved_posts ); //Send delete command to the frontend
 	}
-//	delete_user_meta($current_user, 'sv_post_ids');
-	wp_send_json_success( $saved_posts );
 }
 
 add_action( 'init', 'sv_move_posts_from_cookie_to_usermeta' );
@@ -44,6 +53,16 @@ function sv_move_posts_from_cookie_to_usermeta() {
 
 function sv_check_post_exist_by_id( $id ) {
 	return is_string( get_post_status( $id ) );
+}
+
+add_action( 'sv_render_save_posts_button', 'sv_render_save_posts_button' );
+function sv_render_save_posts_button() {
+	?>
+    <button type="button" class="sv-save-post" data-control="add"
+            data-nonce="<?php echo wp_create_nonce( 'sv_save_post' ); ?>" data-post-id="<?php the_ID(); ?>">
+        save this post
+    </button>
+	<?php
 }
 
 add_action( 'sv_render_posts_list', 'sv_view_saved_posts' );
@@ -79,16 +98,7 @@ function sv_view_saved_posts() {
 		}
 
 	} else {
-		//get posts ids from saved cookie
+		//get posts ids from saved in cookie
 	}
 }
 
-add_action( 'sv_render_save_posts_button', 'sv_render_save_posts_button' );
-function sv_render_save_posts_button() {
-	?>
-    <button type="button" class="sv-save-post" data-control="add"
-            data-nonce="<?php echo wp_create_nonce( 'sv_save_post' ); ?>" data-post-id="<?php the_ID(); ?>">
-        save this post
-    </button>
-	<?php
-}

@@ -1,4 +1,4 @@
-var post_id, nonce = '';
+var post_id, nonce, control = '';
 jQuery(document).ready(function ($) {
     'use strict';
     //Add post to the list
@@ -6,6 +6,7 @@ jQuery(document).ready(function ($) {
         e.preventDefault();
         post_id = $(this).data("post-id");
         nonce = $(this).data("nonce");
+        control = $(this).data("control");
         $.ajax({
             type: "post",
             dataType: "json",
@@ -14,7 +15,7 @@ jQuery(document).ready(function ($) {
                 action: "sv_post_id",
                 post_id: post_id,
                 nonce: nonce,
-                //control
+                control: control
                 //ToDO add control type to the object
             },
             success: function (response) {
@@ -36,6 +37,7 @@ jQuery(document).ready(function ($) {
         e.preventDefault();
         post_id = $(this).data("post-id");
         nonce = $(this).data("nonce");
+        control = $(this).data("control");
         $.ajax({
             type: "post",
             dataType: "json",
@@ -43,7 +45,8 @@ jQuery(document).ready(function ($) {
             data: {
                 action: "sv_post_id",
                 post_id: post_id,
-                nonce: nonce
+                nonce: nonce,
+                control: control
             },
             success: function (response) {
                 // console.log('good');
