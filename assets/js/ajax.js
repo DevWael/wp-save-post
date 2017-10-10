@@ -13,9 +13,9 @@ jQuery(document).ready(function ($) {
             url: sv_ajax_object.sv_ajax_url,
             data: {
                 action: "sv_post_id",
-                post_id: spost_id,
-                nonce: snonce,
-                control: scontrol
+                post_id: post_id,
+                nonce: nonce,
+                control: control
             },
             success: function (response) {
                 console.log(response);
