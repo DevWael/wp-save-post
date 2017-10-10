@@ -4,6 +4,8 @@
  * Plugin core functionality
  */
 
+require SV_CORE_DIR . 'post-template.php';
+
 /**
  * Handle ajax requests when not logged in and save data into a cookie
  */
@@ -85,7 +87,7 @@ function sv_view_saved_posts() {
 					while ( $query->have_posts() ) {
 						//Render html posts file here
 						$query->the_post();
-						require SV_CORE_DIR . 'post-template.php';
+						sv_post_template();
 					}
 				}
 				wp_reset_postdata();
