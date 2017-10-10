@@ -4,9 +4,9 @@ jQuery(document).ready(function ($) {
     //Add post to the list
     $(".sv-save-post").click(function (e) {
         e.preventDefault();
-       var spost_id = $(this).data("post-id");
-        var snonce = $(this).data("nonce");
-        var scontrol = $(this).data("control");
+        post_id = $(this).data("post-id");
+        nonce = $(this).data("nonce");
+        control = $(this).data("control");
         $.ajax({
             type: "post",
             dataType: "json",
