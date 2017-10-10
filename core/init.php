@@ -103,6 +103,11 @@ function sv_view_saved_posts() {
 	}
 }
 
+add_shortcode('sv_saved_posts','sv_short_code');
+function sv_short_code(){
+	sv_view_saved_posts();
+}
+
 function sv_display_saved_posts_in_user_profile() {
 
 }
