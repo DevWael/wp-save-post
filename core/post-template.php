@@ -11,11 +11,13 @@ function sv_post_template( $p_id = '' ) {
                 <i class="fa fa-times-circle" aria-hidden="true"></i>
             </button>
         </div>
-        <div class="sv-post-image">
-            <a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>">
-				<?php the_post_thumbnail( 'small' ); ?>
-            </a>
-        </div>
+		<?php if ( has_post_thumbnail() ): ?>
+            <div class="sv-post-image">
+                <a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>">
+					<?php the_post_thumbnail( 'small' ); ?>
+                </a>
+            </div>
+		<?php endif; ?>
         <div class="sv-post-content">
             <a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>">
 				<?php the_title(); ?>
