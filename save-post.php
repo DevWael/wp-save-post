@@ -21,7 +21,6 @@ define( 'SV_JS_URI', plugins_url( 'assets/js/', __FILE__ ) );
 define( 'SV_CORE_DIR', plugin_dir_path( __FILE__ ) . 'core' . DIRECTORY_SEPARATOR );
 define( 'SV_ADMIN_DIR', plugin_dir_path( __FILE__ ) . 'admin' . DIRECTORY_SEPARATOR );
 
-
 /**
  * Include plugin files
  */
