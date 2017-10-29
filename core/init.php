@@ -20,6 +20,7 @@ function sv_handle_posts_in_cookie() {
 add_action( 'wp_ajax_sv_post_id', 'sv_handle_posts_in_usermeta' );
 function sv_handle_posts_in_usermeta() {
 	//Security check
+
     if ( ! isset( $_POST['nonce'] ) ) {
 		wp_send_json_error( 'Nonce is missing' );
 	}
