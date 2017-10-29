@@ -21,24 +21,31 @@ add_action( 'wp_ajax_sv_post_id', 'sv_handle_posts_in_usermeta' );
 function sv_handle_posts_in_usermeta() {
 	//Security check
 
-    if ( ! isset( $_POST['nonce'] ) ) {
+	if ( ! isset( $_POST['nonce'] ) ) {
 		wp_send_json_error( 'Nonce is missing' );
 	}
 	if ( ! wp_verify_nonce( $_POST['nonce'], 'sv_save_post' ) ) {
 		wp_send_json_error( 'Bad nonce' );
 	}
 	$current_user = get_current_user_id();
-	$saved_posts  = get_user_meta( $current_user, 'sv_post_ids', true );
+	//delete_user_meta($current_user, 'sv_post_ids'); //refreshing user meta for testing only
+	$saved_posts = (array) get_user_meta( $current_user, 'sv_post_ids', true );
+
 	if ( isset( $_POST['control'] ) && $_POST['control'] === 'add' ) {
+		//wp_send_json_success( $saved_posts);
 		if ( isset( $_POST['post_id'] ) && is_numeric( $_POST['post_id'] ) && sv_check_post_exist_by_id( $_POST['post_id'] ) ) {
 			if ( ! in_array( $_POST['post_id'], $saved_posts ) ) {
 				$saved_posts[] = $_POST['post_id'];
 				update_user_meta( $current_user, 'sv_post_ids', $saved_posts );
+				wp_send_json_success( $saved_posts ); //Send add post command to the frontend
 			}
+		} else {
+			//sending error message ToDo make the error message
+			wp_send_json_error( 'some error (failed to validate or the post with the given ID is not exist)' );
 		}
-		wp_send_json_success( $saved_posts ); //Send add post command to the frontend
+
 	} elseif ( isset( $_POST['control'] ) && $_POST['control'] === 'delete' ) {
-		//Delete Mechanizm
+		//Delete Mechanism
 		$key = array_search( $_POST['post_id'], $saved_posts );
 		if ( $key !== false ) {
 			unset( $saved_posts[ $key ] );
@@ -46,6 +53,7 @@ function sv_handle_posts_in_usermeta() {
 		update_user_meta( $current_user, 'sv_post_ids', $saved_posts );
 		wp_send_json_success( array( 'post_id' => $_POST['post_id'] ) ); //Send delete command to the frontend
 	}
+
 }
 
 add_action( 'init', 'sv_move_posts_from_cookie_to_usermeta' );
@@ -104,8 +112,8 @@ function sv_view_saved_posts() {
 	}
 }
 
-add_shortcode('sv_saved_posts','sv_short_code');
-function sv_short_code(){
+add_shortcode( 'sv_saved_posts', 'sv_short_code' );
+function sv_short_code() {
 	sv_view_saved_posts();
 }
 
