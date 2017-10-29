@@ -11,7 +11,7 @@ require SV_CORE_DIR . 'post-template.php';
  */
 add_action( 'wp_ajax_nopriv_sv_post_id', 'sv_handle_posts_in_cookie' );
 function sv_handle_posts_in_cookie() {
-	//Handle ajax requests when not logged in and save data into a cookie
+	//todo Handle ajax requests when not logged in and save data into a cookie
 }
 
 /**
@@ -20,7 +20,14 @@ function sv_handle_posts_in_cookie() {
 add_action( 'wp_ajax_sv_post_id', 'sv_handle_posts_in_usermeta' );
 function sv_handle_posts_in_usermeta() {
 	//Security check
-
+	ob_start();
+	sv_save_post_button();
+	$delete_button = ob_get_clean();
+	ob_end_clean();
+	ob_start();
+	sv_delete_post_button();
+	$add_button = ob_get_clean();
+	ob_end_clean();
 	if ( ! isset( $_POST['nonce'] ) ) {
 		wp_send_json_error( 'Nonce is missing' );
 	}
@@ -34,45 +41,91 @@ function sv_handle_posts_in_usermeta() {
 	if ( isset( $_POST['control'] ) && $_POST['control'] === 'add' ) {
 		//wp_send_json_success( $saved_posts);
 		if ( isset( $_POST['post_id'] ) && is_numeric( $_POST['post_id'] ) && sv_check_post_exist_by_id( $_POST['post_id'] ) ) {
+			//Make the (Add) process
 			if ( ! in_array( $_POST['post_id'], $saved_posts ) ) {
 				$saved_posts[] = $_POST['post_id'];
 				update_user_meta( $current_user, 'sv_post_ids', $saved_posts );
-				wp_send_json_success( $saved_posts ); //Send add post command to the frontend
+				wp_send_json_success( array(
+					'saved_posts' => $saved_posts,
+					'message'     => 'added',
+					'button'      => $add_button
+				) ); //Send add post command to the frontend
+			} else {
+				wp_send_json_success( array(
+					'message' => 'the post is existing',
+					'button'  => $delete_button
+				) );
 			}
 		} else {
-			//sending error message ToDo make the error message
+			//(Validation error) sending error message ToDo make the error message
 			wp_send_json_error( 'some error (failed to validate or the post with the given ID is not exist)' );
 		}
-
 	} elseif ( isset( $_POST['control'] ) && $_POST['control'] === 'delete' ) {
 		//Delete Mechanism
 		$key = array_search( $_POST['post_id'], $saved_posts );
 		if ( $key !== false ) {
 			unset( $saved_posts[ $key ] );
+			update_user_meta( $current_user, 'sv_post_ids', $saved_posts );
+			wp_send_json_success( array(
+				'post_id' => $_POST['post_id'],
+				'button'  => $delete_button
+			) ); //Send delete command to the frontend
+		} else {
+		    //the post is no longer exist, send the add button
+			wp_send_json_success( array(
+				'saved_posts' => $saved_posts,
+				'message'     => 'added',
+				'button'      => $add_button
+			) );
 		}
-		update_user_meta( $current_user, 'sv_post_ids', $saved_posts );
-		wp_send_json_success( array( 'post_id' => $_POST['post_id'] ) ); //Send delete command to the frontend
 	}
-
 }
 
 add_action( 'init', 'sv_move_posts_from_cookie_to_usermeta' );
 function sv_move_posts_from_cookie_to_usermeta() {
-
+	//todo move post ids from cookie to user meta (sv_post_ids)
 }
 
 function sv_check_post_exist_by_id( $id ) {
 	return is_string( get_post_status( $id ) );
 }
 
-add_action( 'sv_render_save_posts_button', 'sv_render_save_posts_button' );
-function sv_render_save_posts_button() {
+function sv_save_post_button() {
 	?>
-    <button type="button" class="sv-save-post" data-control="add"
+    <button type="button" class="sv-save-post sv-control-btn" data-control="add"
             data-nonce="<?php echo wp_create_nonce( 'sv_save_post' ); ?>" data-post-id="<?php the_ID(); ?>">
         save this post
     </button>
 	<?php
+}
+
+function sv_delete_post_button() {
+	?>
+    <button type="button" class="sv-delete-btn sv-control-btn" title="Delete" data-control="delete"
+            data-post-id="<?php the_ID(); ?>"
+            data-nonce="<?php echo wp_create_nonce( 'sv_save_post' ); ?>">
+        <i class="fa fa-times-circle" aria-hidden="true"></i>
+    </button>
+	<?php
+}
+
+add_action( 'sv_render_save_posts_button', 'sv_render_save_posts_button' );
+function sv_render_save_posts_button() {
+	$post_id = get_the_ID();
+	if ( is_user_logged_in() ) {
+		//check if the post is saved in post meta
+		$current_user = get_current_user_id();
+		$saved_posts  = (array) get_user_meta( $current_user, 'sv_post_ids', true );
+		if ( in_array( $post_id, $saved_posts ) ) {
+			//the post is existing, show the delete button
+			sv_delete_post_button();
+		} else {
+			//the post is not found in the save posts list, show the (Add button)
+			sv_save_post_button();
+		}
+	} else {
+		//ToDo check if the post is saved in cookies
+	}
 }
 
 add_action( 'sv_render_posts_list', 'sv_view_saved_posts' );
@@ -104,11 +157,11 @@ function sv_view_saved_posts() {
             </div>
 			<?php
 		} else {
-			//no posts message
+			//todo no posts message
 		}
 
 	} else {
-		//get posts ids from saved in cookie
+		//todo get posts ids from saved in cookie
 	}
 }
 
