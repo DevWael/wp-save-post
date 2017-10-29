@@ -70,6 +70,7 @@
     float: left;
     width: 70%;
     padding: 10px;
+    padding-top: 0;
 }
 
 .sv-posts-container .sv-post-content a {
