@@ -29,6 +29,7 @@ jQuery(document).ready(function ($) {
         });
     });
 
+    //Delete mechanism from the post button
     $(".sv-delete-btn.sv-control-btn").click(function (e) {
         e.preventDefault();
         post_id2 = $(this).data("post-id");
@@ -56,7 +57,7 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    //Delete post from the list
+    //Delete mechanism from the floating menu
     $(".sv-post-container .sv-post-control button").click(function (e) {
         e.preventDefault();
         post_id = $(this).data("post-id");
