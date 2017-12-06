@@ -20,35 +20,35 @@ function sv_handle_posts_in_cookie() {
 add_action( 'wp_ajax_sv_post_id', 'sv_handle_posts_in_usermeta' );
 function sv_handle_posts_in_usermeta() {
 	//Security check
-	ob_start();
-	sv_save_post_button();
-	$delete_button = ob_get_clean();
-	ob_end_clean();
-	ob_start();
-	sv_delete_post_button();
-	$add_button = ob_get_clean();
-	ob_end_clean();
 	if ( ! isset( $_POST['nonce'] ) ) {
 		wp_send_json_error( 'Nonce is missing' );
 	}
 	if ( ! wp_verify_nonce( $_POST['nonce'], 'sv_save_post' ) ) {
 		wp_send_json_error( 'Bad nonce' );
 	}
-	$current_user = get_current_user_id();
+
+	if ( ! isset( $_POST['post_id'] ) ) {
+        //ToDo set error message for the missing post id and stop this function execution
+	}
+	$add_button    = sv_save_post_button( $_POST['post_id'] );
+	$delete_button = sv_delete_post_button( $_POST['post_id'] );
+	$current_user  = get_current_user_id();
 	//delete_user_meta($current_user, 'sv_post_ids'); //refreshing user meta for testing only
 	$saved_posts = (array) get_user_meta( $current_user, 'sv_post_ids', true );
 
 	if ( isset( $_POST['control'] ) && $_POST['control'] === 'add' ) {
-		//wp_send_json_success( $saved_posts);
-		if ( isset( $_POST['post_id'] ) && is_numeric( $_POST['post_id'] ) && sv_check_post_exist_by_id( $_POST['post_id'] ) ) {
+		//wp_send_json_success($saved_posts);
+		if ( isset( $_POST['post_id'] ) && sv_check_post_exist_by_id( $_POST['post_id'] ) ) {
+			//validate post id
 			//Make the (Add) process
 			if ( ! in_array( $_POST['post_id'], $saved_posts ) ) {
 				$saved_posts[] = $_POST['post_id'];
+				delete_user_meta( $current_user, 'sv_post_ids' );
 				update_user_meta( $current_user, 'sv_post_ids', $saved_posts );
 				wp_send_json_success( array(
 					'saved_posts' => $saved_posts,
 					'message'     => 'added',
-					'button'      => $add_button
+					'button'      => $delete_button
 				) ); //Send add post command to the frontend
 			} else {
 				wp_send_json_success( array(
@@ -65,13 +65,14 @@ function sv_handle_posts_in_usermeta() {
 		$key = array_search( $_POST['post_id'], $saved_posts );
 		if ( $key !== false ) {
 			unset( $saved_posts[ $key ] );
+			delete_user_meta( $current_user, 'sv_post_ids' );
 			update_user_meta( $current_user, 'sv_post_ids', $saved_posts );
 			wp_send_json_success( array(
 				'post_id' => $_POST['post_id'],
-				'button'  => $delete_button
+				'button'  => $add_button
 			) ); //Send delete command to the frontend
 		} else {
-		    //the post is no longer exist, send the add button
+			//the post is no longer exist, send the add button
 			wp_send_json_success( array(
 				'saved_posts' => $saved_posts,
 				'message'     => 'added',
@@ -90,23 +91,31 @@ function sv_check_post_exist_by_id( $id ) {
 	return is_string( get_post_status( $id ) );
 }
 
-function sv_save_post_button() {
-	?>
-    <button type="button" class="sv-save-post sv-control-btn" data-control="add"
-            data-nonce="<?php echo wp_create_nonce( 'sv_save_post' ); ?>" data-post-id="<?php the_ID(); ?>">
-        save this post
-    </button>
-	<?php
+function sv_save_post_button( $postID = '' ) {
+	if ( ! empty( $postID ) ) {
+		$post = $postID;
+	} else {
+		$post = get_the_ID();
+	}
+	$label  = 'save this post';
+	$nounce = wp_create_nonce( 'sv_save_post' );
+
+	return '<button type="button" class="sv-save-post sv-control-btn" data-control="add"
+            data-nonce="' . $nounce . '" data-post-id="' . $post . '">' . $label . '</button>';
 }
 
-function sv_delete_post_button() {
-	?>
-    <button type="button" class="sv-delete-btn sv-control-btn" title="Delete" data-control="delete"
-            data-post-id="<?php the_ID(); ?>"
-            data-nonce="<?php echo wp_create_nonce( 'sv_save_post' ); ?>">
-        <i class="fa fa-times-circle" aria-hidden="true"></i>
-    </button>
-	<?php
+function sv_delete_post_button( $postID = '' ) {
+
+	if ( ! empty( $postID ) ) {
+		$post = $postID;
+	} else {
+		$post = get_the_ID();
+	}
+	$nounce = wp_create_nonce( 'sv_save_post' );
+
+	return '<button type="button" class="sv-delete-btn sv-control-btn" title="Delete" data-control="delete"
+            data-post-id="' . $post . '"
+            data-nonce="' . $nounce . '"><i class="fa fa-times-circle" aria-hidden="true"></i></button>';
 }
 
 add_action( 'sv_render_save_posts_button', 'sv_render_save_posts_button' );
@@ -118,10 +127,10 @@ function sv_render_save_posts_button() {
 		$saved_posts  = (array) get_user_meta( $current_user, 'sv_post_ids', true );
 		if ( in_array( $post_id, $saved_posts ) ) {
 			//the post is existing, show the delete button
-			sv_delete_post_button();
+			echo sv_delete_post_button();
 		} else {
 			//the post is not found in the save posts list, show the (Add button)
-			sv_save_post_button();
+			echo sv_save_post_button();
 		}
 	} else {
 		//ToDo check if the post is saved in cookies

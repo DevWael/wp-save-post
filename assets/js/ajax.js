@@ -1,9 +1,10 @@
 var post_id, nonce, control, post_id2, nonce2, control2 = '';
 jQuery(document).ready(function ($) {
     'use strict';
+    var in_post_selector = $(".post-box-meta");
     //Add post to the list
-    $(".sv-control-btn.sv-save-post").click(function (e) {
-        e.preventDefault();
+    in_post_selector.on('click', '.sv-control-btn.sv-save-post', function () {
+        //e.preventDefault();
         post_id = $(this).data("post-id");
         nonce = $(this).data("nonce");
         control = $(this).data("control");
@@ -28,10 +29,10 @@ jQuery(document).ready(function ($) {
             }
         });
     });
-
     //Delete mechanism from the post button
-    $(".sv-delete-btn.sv-control-btn").click(function (e) {
-        e.preventDefault();
+    in_post_selector.on('click', '.sv-delete-btn.sv-control-btn', function () {
+        //console.log('done');
+        //e.preventDefault();
         post_id2 = $(this).data("post-id");
         nonce2 = $(this).data("nonce");
         control2 = $(this).data("control");
