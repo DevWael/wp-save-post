@@ -89,7 +89,7 @@ jQuery(document).ready(function ($) {
                 (function () {
                     //convert post delete to add
                     var current_post_id = $('.post-box-meta .sv-delete-btn');
-                    if(current_post_id.data('post-id') == post_id){
+                    if(current_post_id.data('post-id') === post_id){
                         current_post_id.remove();
                     }
                 })();
