@@ -26,9 +26,9 @@ function sv_handle_posts_in_usermeta() {
 	if ( ! wp_verify_nonce( $_POST['nonce'], 'sv_save_post' ) ) {
 		wp_send_json_error( 'Bad nonce' );
 	}
-
 	if ( ! isset( $_POST['post_id'] ) ) {
-        //ToDo set error message for the missing post id and stop this function execution
+		//ToDo send error message for the missing post id and stop this function execution
+		//wp_send_json_error();
 	}
 	$add_button    = sv_save_post_button( $_POST['post_id'] );
 	$delete_button = sv_delete_post_button( $_POST['post_id'] );
@@ -38,7 +38,7 @@ function sv_handle_posts_in_usermeta() {
 
 	if ( isset( $_POST['control'] ) && $_POST['control'] === 'add' ) {
 		//wp_send_json_success($saved_posts);
-		if ( isset( $_POST['post_id'] ) && sv_check_post_exist_by_id( $_POST['post_id'] ) ) {
+		if ( sv_check_post_exist_by_id( $_POST['post_id'] ) ) {
 			//validate post id
 			//Make the (Add) process
 			if ( ! in_array( $_POST['post_id'], $saved_posts ) ) {
@@ -48,7 +48,8 @@ function sv_handle_posts_in_usermeta() {
 				wp_send_json_success( array(
 					'saved_posts' => $saved_posts,
 					'message'     => 'added',
-					'button'      => $delete_button
+					'button'      => $delete_button,
+					'added_post'  => apply_filters( 'render_post_template', $_POST['post_id'], false )
 				) ); //Send add post command to the frontend
 			} else {
 				wp_send_json_success( array(
@@ -70,12 +71,12 @@ function sv_handle_posts_in_usermeta() {
 			wp_send_json_success( array(
 				'post_id' => $_POST['post_id'],
 				'button'  => $add_button
-			) ); //Send delete command to the frontend
+			) ); //Send delete command and the add button to the frontend
 		} else {
 			//the post is no longer exist, send the add button
 			wp_send_json_success( array(
 				'saved_posts' => $saved_posts,
-				'message'     => 'added',
+				'message'     => 'the post is no longer exist',
 				'button'      => $add_button
 			) );
 		}
@@ -97,7 +98,7 @@ function sv_save_post_button( $postID = '' ) {
 	} else {
 		$post = get_the_ID();
 	}
-	$label  = 'save this post';
+	$label  = '<i class="fa fa-floppy-o" aria-hidden="true"></i>';
 	$nounce = wp_create_nonce( 'sv_save_post' );
 
 	return '<button type="button" class="sv-save-post sv-control-btn" data-control="add"
@@ -137,6 +138,7 @@ function sv_render_save_posts_button() {
 	}
 }
 
+add_action( 'wp_footer', 'sv_view_saved_posts' );
 add_action( 'sv_render_posts_list', 'sv_view_saved_posts' );
 function sv_view_saved_posts() {
 	if ( is_user_logged_in() ) {
@@ -158,7 +160,7 @@ function sv_view_saved_posts() {
 					while ( $query->have_posts() ) {
 						//Render html posts file here
 						$query->the_post();
-						sv_post_template();
+						apply_filters( 'render_post_template', get_the_ID(), true );
 					}
 				}
 				wp_reset_postdata();

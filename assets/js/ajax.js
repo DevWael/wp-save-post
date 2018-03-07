@@ -2,6 +2,7 @@ var post_id, nonce, control, post_id2, nonce2, control2 = '';
 jQuery(document).ready(function ($) {
     'use strict';
     var in_post_selector = $(".post-box-meta");
+    var posts_container = $('.sv-posts-container');
     //Add post to the list
     in_post_selector.on('click', '.sv-control-btn.sv-save-post', function () {
         //e.preventDefault();
@@ -19,13 +20,16 @@ jQuery(document).ready(function ($) {
                 control: control
             },
             success: function (response) {
-                console.log(response);
+                //console.log(response.data.added_post);
                 $('.sv-save-post').fadeOut(100, function () {
                     $(this).remove();
                 });
-                $('.post-box-meta').append(response.data.button);
+                in_post_selector.append(response.data.button);
+                //posts_container.append(response.data.added_post);
                 //todo change the add button to delete
                 //todo may be we send the delete button in the response
+                //response2.data.added_post
+                posts_container.prepend(response.data.added_post);
             }
         });
     });
@@ -47,20 +51,22 @@ jQuery(document).ready(function ($) {
                 control: control2
             },
             success: function (response2) {
-                console.log(response2);
+
                 $('.sv-delete-btn').fadeOut(100, function () {
                     $(this).remove();
                 });
-                $('.post-box-meta').append(response2.data.button);
-                //todo change the add button to delete
-                //todo may be we send the delete button in the response
+                in_post_selector.append(response2.data.button);
+                $('.sv-post-container.sv-post-' + response2.data.post_id).fadeOut(300, function () {
+                    $(this).remove();
+                });
+
             }
         });
     });
 
     //Delete mechanism from the floating menu
-    $(".sv-post-container .sv-post-control button").click(function (e) {
-        e.preventDefault();
+    posts_container.on('click','.sv-post-container .sv-post-control button',function () {
+        // e.preventDefault();
         post_id = $(this).data("post-id");
         nonce = $(this).data("nonce");
         control = $(this).data("control");
@@ -75,14 +81,25 @@ jQuery(document).ready(function ($) {
                 control: control
             },
             success: function (response) {
-                console.log(response);
+                //console.log(response);
                 //remove the post
                 $('.sv-post-container.sv-post-' + response.data.post_id).fadeOut(300, function () {
                     $(this).remove();
                 });
+                (function () {
+                    //convert post delete to add
+                    var current_post_id = $('.post-box-meta .sv-delete-btn');
+                    if(current_post_id.data('post-id') == post_id){
+                        current_post_id.remove();
+                    }
+                })();
+                //console.log();
+                in_post_selector.append(response.data.button);
 
-                // $('.post-box-meta').append(response.data.button);
             }
         });
     });
+
+
+
 });
