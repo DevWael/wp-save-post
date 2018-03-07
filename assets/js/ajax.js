@@ -51,7 +51,6 @@ jQuery(document).ready(function ($) {
                 control: control2
             },
             success: function (response2) {
-
                 $('.sv-delete-btn').fadeOut(100, function () {
                     $(this).remove();
                 });
